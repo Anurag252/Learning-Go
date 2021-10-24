@@ -13,3 +13,31 @@ The name of the binary matches the name of the file or package that you passed i
 The go install command takes an argument, which is the location of the source code repository of the project you want to install, followed by an @ and the version of the tool you want (if you just want to get the latest version, use @latest). It then downloads, compiles, and installs the tool into your $GOPATH/bin directory.
 
 The Go development tools include a command, `go fmt`, which automatically reformats your code to match the standard format. It does things like fixing up the whitespace for indentation, lining up the fields in a struct, and making sure there is proper spacing around operators.
+
+`goimports -l -w`
+
+The -l flag tells goimports to print the files with incorrect formatting to the console. The -w flag tells goimports to modify the files in-place. The . specifies the files to be scanned: everything in the current directory and all of its subdirectories.
+
+However, Go developers never put the semicolons in themselves; the Go compiler does it for them following a very simple rule described in Effective Go:
+
+The go fmt command won’t fix braces on the wrong line, because of the semicolon insertion rule. Like C or Java, Go requires a semicolon at the end of every statement. However, Go developers never put the semicolons in themselves; the Go compiler does it for them following a very simple rule described in Effective Go:
+
+If the last token before a newline is any of the following, the lexer inserts a semicolon after the token:
+
+An identifier (which includes words like int and float64)
+
+A basic literal such as a number or string constant
+
+One of the tokens: “break,” “continue,” “fallthrough,” “return,” “++,” “--,” “),” or “}”
+
+go lint --< coding styles
+
+go vet -- > This includes things like passing the wrong number of parameters to formatting methods or assigning values to variables that are never used  
+
+ golangci-lint. It combines golint, go vet, and an ever-increasing set of other code quality tools. Once it is installed, you run golangci-lint with the command:
+ 
+ ![image](https://user-images.githubusercontent.com/4143476/138606066-38c53570-ac51-4e1e-bdff-4ad676ae7494.png)
+ 
+ makefile example :- here target:pre-requisite is the format
+ 
+
