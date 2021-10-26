@@ -40,4 +40,6 @@ go vet -- > This includes things like passing the wrong number of parameters to 
  
  makefile example :- here target:pre-requisite is the format
  
+ # Literal
+ A literal in Go refers to writing out a number, character, or string. There are four common kinds of literals that you’ll find in Go programs. (There’s a rare fifth kind of literal that we’ll cover when discussing complex numbers.)
 
