@@ -57,6 +57,60 @@ If you need to include backslashes, double quotes, or newlines in your string, u
 
 Go lets you use an integer literal in floating point expressions or even assign an integer literal to a floating point variable. This is because literals in Go are untyped; they can interact with any variable that’s compatible with the literal. 
 
+Booleans
+The bool type represents Boolean variables. Variables of bool type can have one of two values: true or false. The zero value for a bool is false:
 
+Numeric Types
+Go has a large number of numeric types: 12 different types (and a few special names) that are grouped into three categories.
+
+A byte is an alias for uint8; it is legal to assign, compare, or perform mathematical operations between a byte and a uint8. However, you rarely see uint8 used in Go code; just call it a byte.
+
+The second special name is int. On a 32-bit CPU, int is a 32-bit signed integer like an int32. On most 64-bit CPUs, int is a 64-bit signed integer, just like an int64. Because int isn’t consistent from platform to platform, it is a compile-time error to assign, compare, or perform mathematical operations between an int and an int32 or int64 without a type conversion
+
+There are two other special names for integer types, rune and uintptr.details about them later
+
+
+
+The reason why int64 and uint64 are the idiomatic choice in this situation is that Go doesn’t have generics (yet) and doesn’t have function overloading. Without these features, you’d need to write many functions with slightly different names to implement your algorithm. Using int64 and uint64 means that you can write the code once and let your callers use type conversions to pass values in and convert data that’s returned.
+
+You can see this pattern in the Go standard library with the functions FormatInt/FormatUint and ParseInt/ParseUint in the strconv package. There are other situations, like in the math/bits package, where the size of the integer matters. In those cases, you need to write a separate function for every integer type.
+
+You can combine any of the arithmetic operators with = to modify a variable: +=, -=, *=, /=, and %=.
+
+Just like the arithmetic operators, you can also combine all of the logical operators with = to modify a variable: &=, |=, ^=, &^=, <<=, and >>=.
+
+You can use all the standard mathematical and comparison operators with floats, except %. Floating point division has a couple of interesting properties. Dividing a nonzero floating point variable by 0 returns +Inf or -Inf (positive or negative infinity), depending on the sign of the number. Dividing a floating point variable set to 0 by 0 returns NaN (Not a Number).
+
+There isn’t a lot to the complex number support in Go. Go defines two complex number types. complex64 uses float32 values to represent the real and imaginary part, and complex128 uses float64 values. 
+
+Strings in Go are immutable; you can reassign the value of a string variable, but you cannot change the value of the string that is assigned to it.
+
+Go also has a type that represents a single code point. The rune type is an alias for the int32 type, just like byte is an alias for uint8. As you could probably guess, a rune literal’s default type is a rune, and a string literal’s default type is a string.
+
+ Go doesn’t allow automatic type promotion between variables. You must use a type conversion when variable types do not match. Even different-sized integers and floats must be converted to the same type to interact. This makes it clear exactly what type you want without having to memorize any type conversion rules (see Example 2-2).
+ 
+ `var x int = 10
+var y float64 = 30.2
+var z float64 = float64(x) + y
+var d int = x + int(y)`
+
+variable declaration :- 
+
+`var x int = 10`
+`var x, y int = 10, 20`
+
+
+var (
+    x    int
+    y        = 20
+    z    int = 30
+    d, e     = 40, "hello"
+    f, g string
+)
+
+
+The most common declaration style within functions is :=. Outside of a function, use declaration lists on the rare occasions when you are declaring multiple package-level variables.
+
+You should rarely declare variables outside of functions, in what’s called the package block (see “Blocks”). Package-level variables whose values change are a bad idea. When you have a variable outside of a function, it can be difficult to track the changes made to it, which makes it hard to understand how data is flowing through your program. This can lead to subtle bugs. As a general rule, you should only declare variables in the package block that are effectively immutable.
 
 
