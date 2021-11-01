@@ -236,3 +236,70 @@ We can also specify an initial capacity with make:
 `x := make([]int, 5, 10)`
 This creates an int slice with a length of 5 and a capacity of 10.
 
+If you are sure you know the exact size you want, you can specify the length and index into the slice to set the values. This is often done when transforming values in one slice and storing them in a second. The downside to this approach is that if you have the size wrong, you’ll end up with either zero values at the end of the slice or a panic from trying to access elements that don’t exist.
+
+In other situations, use make with a zero length and a specified capacity. This allows you to use append to add items to the slice. If the number of items turns out to be smaller, you won’t have an extraneous zero value at the end. If the number of items is larger, your code will not panic.
+
+The Go community is split between the second and third approaches. I personally prefer using append with a slice initialized to a zero length. It might be slower in some situations, but it is less likely to introduce a bug.
+
+A slice expression creates a slice from a slice. It’s written inside brackets and consists of a starting offset and an ending offset, separated by a colon (:). If you leave off the starting offset, 0 is assumed. Likewise, if you leave off the ending offset, the end of the slice is substituted.
+
+
+`x := []int{1, 2, 3, 4}
+y := x[:2]
+z := x[1:]
+d := x[1:3]
+e := x[:]
+fmt.Println("x:", x)
+fmt.Println("y:", y)
+fmt.Println("z:", z)
+fmt.Println("d:", d)
+fmt.Println("e:", e)`
+
+When you take a slice from a slice, you are not making a copy of the data. Instead, you now have two variables that are sharing memory. This means that changes to an element in a slice affect all slices that share that element. Let’s see what happens when we change values.
+
+x[a:b] --> means from a to b-1
+
+What’s going on? Whenever you take a slice from another slice, the subslice’s capacity is set to the capacity of the original slice, minus the offset of the subslice within the original slice. This means that any unused capacity in the original slice is also shared with any subslices.
+
+To avoid complicated slice situations, you should either never use append with a subslice or make sure that append doesn’t cause an overwrite by using a full slice expression. 
+
+The full slice expression includes a third part, which indicates the last position in the parent slice’s capacity that’s available for the subslice. Subtract the starting offset from this number to get the subslice’s capacity. Example 3-8 shows lines three and four from the previous example, modified to use full slice expressions.
+
+
+
+`y := x[:2:2]
+z := x[2:4:4]`
+
+Slices aren’t the only thing you can slice. If you have an array, you can take a slice from it using a slice expression. This is a useful way to bridge an array to a function that only takes slices. However, be aware that taking a slice from an array has the same memory-sharing properties as taking a slice from a slice. If you run the following code on The Go Playground:
+
+`x := [4]int{5, 6, 7, 8}
+y := x[:2]
+z := x[2:]
+x[0] = 10
+fmt.Println("x:", x)
+fmt.Println("y:", y)
+fmt.Println("z:", z)`
+
+copy
+If you need to create a slice that’s independent of the original, use the built-in copy function. 
+
+The copy function takes two parameters. The first is the destination slice and the second is the source slice. It copies as many values as it can from source to destination, limited by whichever slice is smaller, and returns the number of elements copied. The capacity of x and y doesn’t matter; it’s the length that’s important.
+
+
+You could also copy from the middle of the source slice:
+
+`x := []int{1, 2, 3, 4}
+y := make([]int, 2)
+copy(y, x[2:])`
+
+The copy function allows you to copy between two slices that cover overlapping sections of an underlying slice:
+
+x := []int{1, 2, 3, 4}
+num = copy(x[:3], x[1:])
+fmt.Println(x, num)
+
+You can use copy with arrays by taking a slice of the array. You can make the array either the source or the destination of the copy.
+
+## Strings and Runes and Bytes
+
