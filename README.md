@@ -113,4 +113,126 @@ The most common declaration style within functions is :=. Outside of a function,
 
 You should rarely declare variables outside of functions, in what’s called the package block (see “Blocks”). Package-level variables whose values change are a bad idea. When you have a variable outside of a function, it can be difficult to track the changes made to it, which makes it hard to understand how data is flowing through your program. This can lead to subtle bugs. As a general rule, you should only declare variables in the package block that are effectively immutable.
 
+Using const
+ const in Go is very limited. Constants in Go are a way to give names to literals. They can only hold values that the compiler can figure out at compile time. This means that they can be assigned:
+
+Numeric literals
+
+true and false
+
+Strings
+
+Runes
+
+The built-in functions complex, real, imag, len, and cap
+
+Expressions that consist of operators and the preceding values
+
+iota  can be used with const
+here are no immutable arrays, slices, maps, or structs, and there’s no way to declare that a field in a struct is immutable. This is less limiting than it sounds. Within a function, it is clear if a variable is being modified, so immutability is less important. In “Go Is Call By Value”, we’ll see how Go prevents modifications to variables that are passed as parameters to functions.
+
+Constants can be typed or untyped. An untyped constant works exactly like a literal; it has no type of its own, but does have a default type that is used when no other type can be inferred. A typed constant can only be directly assigned to a variable of that type.
+
+
+In general, leaving a constant untyped gives you more flexibility
+
+Another Go requirement is that every declared local variable must be read. It is a compile-time error to declare a local variable and to not read its value.
+
+Go requires identifier names to start with a letter or underscore, and the name can contain numbers, underscores, and letters. Go’s definition of “letter” and “number” is a bit broader than many languages. Any Unicode character that is considered a letter or digit is allowed.
+
+In many languages, constants are always written in all uppercase letters, with words separated by underscores (names like INDEX_COUNTER or NUMBER_TRIES). Go does not follow this pattern. This is because Go uses the case of the first letter in the name of a package-level declaration to determine if the item is accessible outside the package.
+
+Within a function, favor short variable names. The smaller the scope for a variable, the shorter the name that’s used for it. It is very common in Go to see single-letter variable names. For example, the names k and v (short for key and value) are used as the variable names in a for-range loop. If you are using a standard for loop, i and j are common names for the index variable. There are other idiomatic ways to name variables of common types; we will mention them as we cover more parts of the standard library.
+
+When naming variables and constants in the package block, use more descriptive names. The type should still be excluded from the name, but since the scope is wider, you need a more complete name to make it clear what the value represents
+
+## Chapter 3. Composite Types
+Arrays are not used directly
+All of the elements in the array must be of the type that’s specified (this doesn’t mean they are always of the same type). There are a few different declaration styles. 
+
+`var x [3]int` array declaration
+
+`var x = [3]int{10, 20, 30}`
+
+If you have a sparse array (an array where most elements are set to their zero value), you can specify only the indices with values in the array literal:
+
+`var x = [12]int{1, 5: 4, 6, 10: 100, 15}`
+This creates an array of 12 ints with the following values: [1, 0, 0, 0, 0, 4, 6, 0, 0, 0, 100, 15].
+
+When using an array literal to initialize an array, you can leave off the number and use … instead:
+
+`var x = [...]int{10, 20, 30}`
+You can use == and != to compare arrays:
+
+`var x = [...]int{1, 2, 3}`
+`var y = [3]int{1, 2, 3}`
+`fmt.Println(x == y)` // prints true
+Go only has one-dimensional arrays, but you can simulate multidimensional arrays:
+
+`var x [2][3]int`
+
+Go considers the size of the array to be part of the type of the array. This makes an array that’s declared to be [3]int a different type from an array that’s declared to be [4]int. This also means that you cannot use a variable to specify the size of an array, because types must be resolved at compile time, not at runtime.
+
+What’s more, you can’t use a type conversion to convert arrays of different sizes to identical types. Because you can’t convert arrays of different sizes into each other, you can’t write a function that works with arrays of any size and you can’t assign arrays of different sizes to the same variable.
+
+Go arrays are not used directly but used for backing Slices
+
+## Slices
+
+slice declaration `var x = []int{10, 20, 30}`
+
+we can also specify only the indices with values in the slice literal:
+
+`var x = []int{1, 5: 4, 6, 10: 100, 15}`
+
+You can simulate multidimensional slices and make a slice of slices:
+
+`var x [][]int`
+
+var x []int here , zero value of slice is nil
+
+
+A slice is the first type we’ve seen that isn’t comparable. It is a compile-time error to use == to see if two slices are identical or != to see if they are different. The only thing you can compare a slice with is nil:
+
+
+The reflect package contains a function called DeepEqual that can compare almost anything, including slices. It’s primarily intended for testing, but you could use it to compare slices if you needed to.
+
+
+## inbuilt functions :- 
+len
+append
+`var x []int`
+`x = append(x, 10)`
+
+used to grow slices
+
+The append function takes at least two parameters, a slice of any type and a value of that type. It returns a slice of the same type. The returned slice is assigned back to the slice that’s passed in.
+
+
+var x = []int{1, 2, 3}
+x = append(x, 4)
+
+`x = append(x, 5, 6, 7)`
+
+`y := []int{20, 30, 40}`
+`x = append(x, y...)`
+
+slice is like arraylist that increases the array capacity by twice 
+
+better to allocate slice using make
+
+make
+We’ve already seen two ways to declare a slice, using a slice literal or the nil zero value. While useful, neither way allows you to create an empty slice that already has a length or capacity specified. That’s the job of the built-in make function. It allows us to specify the type, length, and, optionally, the capacity. Let’s take a look:
+
+`x := make([]int, 5)`
+
+`x = append(x, 10)`
+
+
+The 10 is placed at the end of the slice, after the zero values in positions 0–4 because append always increases the length of a slice. The value of x is now [0 0 0 0 0 10], with a length of 6 and a capacity of 10 (the capacity was doubled as soon as the sixth element was appended).
+
+We can also specify an initial capacity with make:
+
+`x := make([]int, 5, 10)`
+This creates an int slice with a length of 5 and a capacity of 10.
 
