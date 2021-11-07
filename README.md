@@ -540,4 +540,19 @@ for-range on strings iterate over runes and not bytes
 The for-range value is a copy
 You should be aware that each time the for-range loop iterates over your compound type, it copies the value from the compound type to the value variable. Modifying the value variable will not modify the value in the compound type.
 
+As is the case with if statements, you don’t put parenthesis around the value being compared in a switch.
+Also like an if statement, you can declare a variable that’s scoped to all of the branches of the switch statement. In our case, we are scoping the variable word to all of the cases in the switch statement.
+All of the case clauses (and the optional default clause) are contained inside a set of braces. But you should note that you don’t put braces around the contents of the case clauses. You can have multiple lines inside a case (or default) clause and they are all considered to be part of the same block.
+
+By default, cases in switch statements in Go don’t fall through. This is more in line with the behavior in Ruby or (if you are an old-school programmer) Pascal.
+
+This prompts the question: if cases don’t fall through, what do you do if there are multiple values that should trigger the exact same logic? In Go, you separate multiple matches with commas, like we do when matching 1, 2, 3, and 4 or 6, 7, 8, and 9. That’s why we get the same output for both a and cow.
+
+For the sake of completeness, Go does include a fallthrough keyword, which lets one case continue on to the next one. Please think twice before implementing an algorithm that uses it. If you find yourself needing to use fallthrough, try to restructure your logic to remove the dependencies between cases.
+
+
+to use break inside a for nested in switch use lable , like this break loop
+
+a blank switch uses a boolean match , all trues are executed
+
 
