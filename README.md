@@ -555,4 +555,153 @@ to use break inside a for nested in switch use lable , like this break loop
 
 a blank switch uses a boolean match , all trues are executed
 
+## Chapter 5. Functions
+main functions don’t take in any parameters or return any values
+
+`func div(numerator int, denominator int) int {
+    if denominator == 0 {
+        return 0
+    }
+    return numerator / denominator
+}`
+
+Go doesn’t have: named and optional input parameters.
+
+define a struct that has fields that match the desired parameters, and pass the struct to your function.
+
+If you want to emulate named and optional parameters, define a struct that has fields that match the desired parameters, and pass the struct to your function
+
+`type MyFuncOpts struct {
+    FirstName string
+    LastName string
+    Age int
+}
+
+func MyFunc(opts MyFuncOpts) error {
+    // do something here
+}
+
+func main() {
+    MyFunc(MyFuncOpts {
+        LastName: "Patel",
+        Age: 50,
+    })
+    My Func(MyFuncOpts {
+        FirstName: "Joe",
+        LastName: "Smith",
+    })
+}`
+
+The variadic parameter must be the last (or only) parameter in the input parameter list. You indicate it with three dots (…) before the type. The variable that’s created within the function is a slice of the specified type
+
+`func addTo(base int, vals ...int) []int {
+    out := make([]int, 0, len(vals))
+    for _, v := range vals {
+        out = append(out, base+v)
+    }
+    return out
+}`
+
+while passing params , if calling by passing slice we need to put three dots as well 
+fmt.Println(addTo(3, []int{1, 2, 3, 4, 5}...))
+
+## Multiple Return Values
+
+`func divAndRemainder(numerator int, denominator int) (int, int, error) {
+    if denominator == 0 {
+        return 0, 0, errors.New("cannot divide by zero")
+    }
+    return numerator / denominator, numerator % denominator, nil
+}`
+
+if a function returns multiple values, you must return all of them, separated by commas. Don’t put parentheses around the returned values; that’s a compile-time error.
+
+`result, remainder, err := divAndRemainder(5, 2)`
+
+You must assign each value returned from a function. If you try to assign multiple return values to one variable, you get a compile-time error.
+
+## Named Return Values
+
+`func divAndRemainder(numerator int, denominator int) (result int, remainder int,
+                                                                  err error) {
+    if denominator == 0 {
+        err = errors.New("cannot divide by zero")
+        return result, remainder, err
+    }
+    result, remainder = numerator/denominator, numerator%denominator
+    return result, remainder, err
+}`
+
+ the name that’s used for a named returned value is local to the function;
+ 
+ no need to explicitly return the named variables
+ 
+ Naked Return -> using blank return , this will return the last assigned values to named arguements //dont use these
+ 
+ Functions are values and hence they can be passed around and stored as values in dictionary
+ 
+ ## Function Type Declarations
+ 
+ `type opFuncType func(int,int) int`
+ 
+ we can define a type and use it to pass around or store in dictionary
+ 
+ ## Anonymous Functions
+ 
+ `func(j int) {
+            fmt.Println("printing", j, "from inside of an anonymous function")
+        }(i)`
+	
+	
+	
+## closure
+
+Functions declared inside of functions are special; they are closures. 
+
+One thing that closures allow you to do is limit a function’s scope. If a function is only going to be called from one other function, but it’s called multiple times, you can use an inner function to “hide” the called function. This reduces the number of declarations at the package level, which can make it easier to find an unused name.
+
+## Returning Functions from Functions
+Not only can you use a closure to pass some function state to another function, you can also return a closure from a function. 
+
+
+## defer
+defer statement is delayed till surrounding function is exited
+
+`func DoSomeInserts(ctx context.Context, db *sql.DB, value1, value2 string)
+                  (err error) {
+    tx, err := db.BeginTx(ctx, nil)
+    if err != nil {
+        return err
+    }
+    defer func() {
+        if err == nil {
+            err = tx.Commit()
+        }
+        if err != nil {
+            tx.Rollback()
+        }
+    }()
+    _, err = tx.ExecContext(ctx, "INSERT INTO FOO (val) values $1", value1)
+    if err != nil {
+        return err
+    }
+    // use tx to do more database inserts here
+    return nil
+}`
+
+Go always makes a copy of the value of the variable.
+
+call by value is for not only for primitive type also for structs etc
+
+only maps and slices are implemented with pointers , hence they will change in function
+
+maps and slices are also values . Every type in Go is a value type. It’s just that sometimes the value is a pointer.
+
+alternate to pass by value we can pass by pointers (which is again pass by value but valuea re pointers )
+
+
+
+ 
+ 
+
 
