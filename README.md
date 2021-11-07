@@ -302,4 +302,146 @@ fmt.Println(x, num)
 You can use copy with arrays by taking a slice of the array. You can make the array either the source or the destination of the copy.
 
 ## Strings and Runes and Bytes
+Under the covers, Go uses a sequence of bytes to represent a string
+
+These bytes don’t have to be in any particular character encoding, but several Go library functions (and the for-range loop that we discuss in the next chapter) assume that a string is composed of a sequence of UTF-8-encoded code points.
+
+`str := "Hello world"
+	fmt.Println(str[0])`
+ 
+ this gives 72 as output
+ 
+ `var s string = "Hello, :blush:"
+var bs []byte = []byte(s)
+var rs []rune = []rune(s)
+fmt.Println(bs)
+fmt.Println(rs)`
+
+this outputs 
+`[72 101 108 108 111 44 32 240 159 140 158]
+[72 101 108 108 111 44 32 127774]`
+
+dont convert string to int at each location , it will be changed to ascii 
+
+
+_UTF-8 is the most commonly used encoding for Unicode. Unicode uses four bytes (32 bits) to represent each code point, the technical name for each character and modifier. Given this, the simplest way to represent Unicode code points is to store four bytes for each code point. This is called UTF-32. It is mostly unused because it wastes so much space. Due to Unicode implementation details, 11 of the 32 bits are always zero. Another common encoding is UTF-16, which uses one or two 16-bit (2-byte) sequences to represent each code point. This is also wasteful; much of the content in the world is written using code points that fit into a single byte. And that’s where UTF-8 comes in.
+
+UTF-8 is very clever. It lets you use a single byte to represent the Unicode characters whose values are below 128 (which includes all of the letters, numbers, and punctuation commonly used in English), but expands to a maximum of four bytes to represent Unicode code points with larger values. The result is that the worst case for UTF-8 is the same as using UTF-32. UTF-8 has some other nice properties. Unlike UTF-32 and UTF-16, you don’t have to worry about little-endian versus big-endian. It also allows you to look at any byte in a sequence and tell if you are at the start of a UTF-8 sequence, or somewhere in the middle. That means you can’t accidentally read a character incorrectly.
+
+The only downside is that you cannot randomly access a string encoded with UTF-8. While you can detect if you are in the middle of a character, you can’t tell how many characters in you are. You need to start at the beginning of the string and count. Go doesn’t require a string to be written in UTF-8, but it strongly encourages it. We’ll see how to work with UTF-8 strings in upcoming chapters.
+
+Fun fact: UTF-8 was invented in 1992 by Ken Thompson and Rob Pike, two of the creators of Go.
+_
+
+Rather than use the slice and index expressions with strings, you should extract substrings and code points from strings using the functions in the strings and unicode/utf8 packages in the standard library.
+
+## Maps
+`var nilMap map[string]int` declaration --> nil map
+
+with brackets `totalWins := map[string]int{} `
+
+here we can read write only after assignment with brackets
+
+initializing struct :- `teams := map[string][]string {
+    "Orcas": []string{"Fred", "Ralph", "Bijou"},
+    "Lions": []string{"Sarah", "Peter", "Billie"},
+    "Kittens": []string{"Waldo", "Raul", "Ze"},
+}`
+
+If you know how many key-value pairs you intend to put in the map, but don’t know the exact values, you can use make to create a map with a default size:
+
+`ages := make(map[int][]string, 10)`
+
+### The comma ok Idiom
+`m := map[string]int{
+    "hello": 5,
+    "world": 0,
+}
+v, ok := m["hello"]
+fmt.Println(v, ok)`
+
+Deleting from maps 
+
+`m := map[string]int{
+    "hello": 5,
+    "world": 10,
+}
+delete(m, "hello")`
+
+### Using Maps as Sets
+use map of string and boolean
+
+Some people prefer to use struct{} for the value when a map is being used to implement a set. (We’ll discuss structs in the next section.) The advantage is that an empty struct uses zero bytes, while a boolean uses one byte.
+
+The disadvantage is that using a struct{} makes your code more clumsy. You have a less obvious assignment, and you need to use the comma ok idiom to check if a value is in the set:
+
+`intSet := map[int]struct{}{}
+vals := []int{5, 10, 2, 5, 8, 7, 3, 9, 1, 2, 10}
+for =, v := range vals {
+    intSet[v] = struct{}{}
+}
+if -, ok := intSet[5]; ok {
+    fmt.Println("5 is in the set")
+}`
+
+
+
+
+Once a struct type is declared, we can define variables of that type:
+
+var fred person
+
+
+A struct literal can be assigned to a variable as well:
+
+`bob := person{}`
+
+There are two different styles for a nonempty struct literal. A struct literal can be specified as a comma-separated list of values for the fields inside of braces:
+
+`julia := person{
+    "Julia",
+    40,
+    "cat",
+}`
+
+
+When using this struct literal format, a value for every field in the struct must be specified, and the values are assigned to the fields in the order they were declared in the struct definition.
+
+also possible :- 
+`beth := person{
+    age:  30,
+    name: "Beth",
+}`
+
+do not mix these two ways , else error
+
+A field in a struct is accessed with dotted notation:
+
+`bob.name = "Bob"
+fmt.Println(beth.name)`
+
+### Anonymous Structs
+used in marshaling/unmarshling and testing
+`pet := struct {
+    name string
+    kind string
+}{
+    name: "Fido",
+    kind: "dog",
+}`
+
+slices and maps , functions , channel feilds are non-comaparable
+
+Whether or not a struct is comparable depends on the struct’s fields. Structs that are entirely composed of comparable types are comparable
+
+overriding operator is not possible * check
+
+ Go does allow you to perform a type conversion from one struct type to another if the fields of both structs have the same names, order, and types.
+ 
+ `type secondPerson struct {
+    name string
+    age  int
+}`
+
+Anonymous structs add a small twist to this: if two struct variables are being compared and at least one of them has a type that’s an anonymous struct, you can compare them without a type conversion if the fields of both structs have the same names, order, and types. You can also assign between named and anonymous struct types if the fields of both structs have the same names, order, and types:
 
