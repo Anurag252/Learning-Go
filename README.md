@@ -445,3 +445,99 @@ overriding operator is not possible * check
 
 Anonymous structs add a small twist to this: if two struct variables are being compared and at least one of them has a type that’s an anonymous struct, you can compare them without a type conversion if the fields of both structs have the same names, order, and types. You can also assign between named and anonymous struct types if the fields of both structs have the same names, order, and types:
 
+
+## Blocks, Shadows, and Control Structures
+
+A shadowing variable is a variable that has the same name as a variable in a containing block. For as long as the shadowing variable exists, you cannot access a shadowed variable
+
+a locaal variable will shadow global variable
+also there will be no error
+`func main() {
+    x := 10
+    fmt.Println(x)
+    fmt := "oops"
+    fmt.Println(fmt)
+}`
+
+here fmt is shadowed , even though its import statement
+
+to detect shadow variable use shadow linter from golang
+
+go has only 25 keywords , others come from universe block 
+int, string , true, false etc come from universe blick 
+its possible to shadow them as well , 
+
+`fmt.Println(true)
+true := 10
+fmt.Println(true)`
+
+prints 10
+shadow linter does not detect , universal block shadows
+
+in If dont put paranthesis
+
+special syntax to declaare and do an if
+`if n := rand.Intn(10); n == 0 {
+    fmt.Println("That's too low")
+} else if n > 5 {
+    fmt.Println("That's too big:", n)
+} else {
+    fmt.Println("That's a good number:", n)
+}`
+
+here n is defined and it is accesible everywhere inside an if block
+
+Technically, you can put any simple statement before the comparison in an if statement. This includes things like a function call that doesn’t return a value or assigning a new value to an existing variable. 
+
+
+## for, Four Ways
+
+- A complete, C-style for
+`for i := 0; i < 10; i++ {
+    fmt.Println(i)
+}`
+ no parenthesis around the parts of the for
+ you must use := to initialize the variables; 
+ Second, just like variable declarations in if statements, you can shadow a variable here.
+ 
+- A condition-only for
+
+`i := 1
+for i < 100 {
+        fmt.Println(i)
+        i = i * 2
+}`
+
+- An infinite for
+
+`func main() {
+    for {
+        fmt.Println("Hello")
+    }`
+    
+    
+
+- for-range
+
+You can only use a for-range loop to iterate over the built-in compound types and user-defined types that are based on them.
+
+`evenVals := []int{2, 4, 6, 8, 10, 12}
+for i, v := range evenVals {
+    fmt.Println(i, v)
+}`
+
+`evenVals := []int{2, 4, 6, 8, 10, 12}
+for _, v := range evenVals {
+    fmt.Println(v)
+}`
+
+here its index and value and for maps it would be key and values
+
+order of k/v pair is random to avoid hashDOS attack , except There is one exception to this rule. To make it easier to debug and log maps, the formatting functions (like fmt.Println) always output maps with their keys in ascending sorted order.
+
+for-range on strings iterate over runes and not bytes
+
+The for-range value is a copy
+You should be aware that each time the for-range loop iterates over your compound type, it copies the value from the compound type to the value variable. Modifying the value variable will not modify the value in the compound type.
+
+
