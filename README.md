@@ -700,6 +700,44 @@ maps and slices are also values . Every type in Go is a value type. It’s just 
 alternate to pass by value we can pass by pointers (which is again pass by value but valuea re pointers )
 
 ## Chapter 6. Pointers
+The zero value for a pointer is nil.
+`var x int32 = 10
+var y bool = true
+pointerX := &x
+pointerY := &y
+var pointerZ *string`
+
+slices 
+maps
+functions
+channels
+interfaces 
+
+all are implemeneted by using pointers
+
+pointer arithmatic not allowed in golang
+
+The & is the address operator. It precedes a value type and returns the address of the memory location where the value is stored:
+
+`x := "hello"
+pointerToX := &x`
+
+The * is the indirection operator. It precedes a variable of pointer type and returns the pointed-to value. This is called dereferencing:
+
+Before dereferencing a pointer, you must make sure that the pointer is non-nil. Your program will panic if you attempt to dereference a nil pointer:
+
+The built-in function new creates a pointer variable. It returns a pointer to a zero value instance of the provided type:
+
+`var x = new(int)
+fmt.Println(x == nil) // prints false
+fmt.Println(*x)       // prints 0`
+
+ For structs, use an & before a struct literal to create a pointer instance. You can’t use an & before a primitive literal (numbers, booleans, and strings) or a constant because they don’t have memory addresses; they exist only at compile time. When you need a pointer to a primitive type, declare a variable and point to it:
+ 
+ `x := &Foo{}
+var y string
+z := &y`
+
 
 
  
