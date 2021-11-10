@@ -699,6 +699,7 @@ maps and slices are also values . Every type in Go is a value type. It’s just 
 
 alternate to pass by value we can pass by pointers (which is again pass by value but valuea re pointers )
 
+## Chapter 6. Pointers
 
 
  
