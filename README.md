@@ -739,6 +739,14 @@ var y string
 z := &y`
 
 
+The built-in function new creates a pointer variable. It returns a pointer to a zero value instance of the provided type:
+var x = new(int)
+fmt.Println(x == nil) // prints false
+fmt.Println(*x)       // prints 0
+
+The new function is rarely used. For structs, use an & before a struct literal to create a pointer instance. You can’t use an & before a primitive literal (numbers, booleans, and strings) or a constant because they don’t have memory addresses; they exist only at compile time
+When you need a pointer to a primitive type, declare a variable and point to it:
+
 
  
  
