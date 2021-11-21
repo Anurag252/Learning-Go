@@ -748,6 +748,22 @@ The new function is rarely used. For structs, use an & before a struct literal t
 When you need a pointer to a primitive type, declare a variable and point to it:
 
 
- 
+ three points about OOP language ( java , js , ruby )
+If you pass an instance of a class to a function and you change the value of a field, the change is reflected in the variable that was passed in.
+
+If you reassign the parameter, the change is not reflected in the variable that was passed in.
+
+If you pass nil/null/None for a parameter value, setting the parameter itself to a new value doesn’t modify the variable in the calling function.
+
+What we are seeing is that every instance of a class in these languages is implemented as a pointer. When a class instance is passed to a function or method, the value being copied is the pointer to the instance. 
+
+When you use a pointer variable or parameter in Go, you see the exact same behaviors. The difference between Go and these languages is that Go gives you the choice to use pointers or values for both primitives and structs. 
+
+passing byy value makes code easy to read and less work for GC
+
+## pointers indicate mutable parameters
+Go constants provide names for literal expressions that can be calculated at compile time. There is no mechanism in the language to declare that other kinds of values are immutable.
+
+immutability type is better in terms of bugs free code , but golang's pass by value nature is gurantees immutability 
 
 
