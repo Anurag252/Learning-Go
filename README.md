@@ -766,4 +766,153 @@ Go constants provide names for literal expressions that can be calculated at com
 
 immutability type is better in terms of bugs free code , but golang's pass by value nature is gurantees immutability 
 
+## Chapter 7. Types, Methods, and Interfaces
+In addition to struct literals, you can use any primitive type or compound type literal to define a concrete type. Here are a few examples:
+
+`type Score int
+type Converter func(string)Score
+type TeamScores map[string]Score`
+
+Go allows you to declare a type at any block level, from the package block down. However, you can only access the type from within its scope.
+
+Just like functions, method names cannot be overloaded. You can use the same method names for different types, but you can’t use the same method name for two different methods on the same type
+
+be aware that methods must be declared in the same package as their associated type; Go doesn’t allow you to add methods to types you don’t control. While you can define a method in a different file within the same package as the type declaration, it is best to keep your type definition and its associated methods together so that it’s easy to follow the implementation.
+
+
+
+If your method modifies the receiver, you must use a pointer receiver.
+
+If your method needs to handle nil instances (see “Code Your Methods for nil Instances”), then it must use a pointer receiver.
+
+If your method doesn’t modify the receiver, you can use a value receiver.
+
+in case a method was defined on pointer recieever , calling on value also calls the same method
+
+
+do not write getter and setter methods for Go structs, unless you need them to meet an interface (we’ll start covering interfaces in “A Quick Lesson on Interfaces”). Go encourages you to directly access a field. Reserve methods for business logic.
+
+
+handle nil recievers , value types will panic , reference types will work but check null rference
+
+
+we can convert a method to function
+
+f1 := myAdder.AddTo
+fmt.Println(f2(myAdder, 15))
+
+
+method vs function
+Any time your logic depends on values that are configured at startup or changed while your program is running, those values should be stored in a struct and that logic should be implemented as a method. If your logic only depends on the input parameters, then it should be a function.
+
+
+
+
+In the case of a method expression, the first parameter is the receiver for the method; our function signature is func(Adder, int) int.
+
+
+Declaring a type based on another type
+
+For user-defined types whose underlying types are built-in types, a user-declared type can be used with the operators for those types. As we see in the preceding code, they can also be assigned literals and constants compatible with the underlying type.
+
+iota 👎
+const (
+    Uncategorized MailCategory = iota
+    Personal
+    Spam
+    Social
+    Advertisements
+)
+here Uncategorized is 0 
+
+Dont use Iota as anyone entering a value at any line can break logic 
+
+better use explicitly typed constants 
+
+`type BitField int
+
+const (
+    Field1 BitField = 1 << iota // assigned 1
+    Field2                      // assigned 2
+    Field3                      // assigned 4
+    Field4                      // assigned 8
+)`
+
+this type of code is also possible
+
+
+## “Favor object composition over class inheritance”
+
+``type Employee struct {
+    Name         string
+    ID           string
+}
+
+func (e Employee) Description() string {
+    return fmt.Sprintf("%s (%s)", e.Name, e.ID)
+}
+
+type Manager struct {
+    Employee
+    Reports []Employee
+}
+
+func (m Manager) FindNewEmployees() []Employee {
+    // do business logic
+}
+``
+
+here Employee is assigned without any name assignment , this makes this as an embedded feild
+
+If the containing struct has fields or methods with the same name as an embedded field, you need to use the embedded field’s type to refer to the obscured fields or methods. If you have types defined like this:
+
+`type Inner struct {
+    X int
+}
+
+type Outer struct {
+    Inner
+    X int
+}`
+
+You can only access the X on Inner by specifying Inner explicitly:
+
+`o := Outer{
+    Inner: Inner{
+        X: 10,
+    },
+    X: 20,
+}
+fmt.Println(o.X)       // prints 20
+fmt.Println(o.Inner.X) // prints 10`
+
+
+When we embed a type, the methods of that type become methods of the outer type, but when they are invoked the receiver of the method is the inner type, not the outer one. 
+
+Duck typing in Golang
+
+You’ll often hear experienced Go developers say that your code should “Accept interfaces, return structs.”
+
+If you create an API that returns interfaces, you are losing one of the main advantages of implicit interfaces: decoupling. You want to limit the third-party interfaces that your client code depends on because your code is now permanently dependent on the module that contains those interfaces, as well as any dependencies of that module, and so on.
+
+function types can also act as recievers
+
+func can also implement interface
+
+
+`type LoggerAdapter func(message string)
+
+func (lg LoggerAdapter) Log(message string) {
+    lg(message)
+}
+
+type Logger interface {
+    Log(message string)
+}
+`
+
+
+
+
+
 
