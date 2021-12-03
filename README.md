@@ -935,3 +935,9 @@ A new error is created from a string by calling the New function in the errors p
 
 
 
+exceptions are not returned but errors in golang and in golang either read a value or use _ and ignore it
+
+2 ways to declare errorr:-
+1.error.New
+2.The second way is to use the fmt.Errorf function. This function allows you to use all of the formatting verbs for fmt.Printf to create an error. Like errors.New, this string is returned when you call the Error method on the returned error instance:
+
